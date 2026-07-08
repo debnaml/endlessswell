@@ -254,6 +254,22 @@ h1,h2,h3{text-shadow:0 6px 44px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.4)}
 .h-sub{color:var(--dim)}
 #grain{opacity:.045}
 
+/* archive prints: real historical photographs */
+.archive{
+  margin:2rem 0 0;max-width:400px;
+  background:var(--bone);padding:10px 10px 12px;border-radius:5px;
+  transform:rotate(-1.7deg);
+  box-shadow:0 22px 55px -18px rgba(0,0,0,.75);
+  transition:transform .35s ease,box-shadow .35s ease;
+}
+.archive:hover{transform:rotate(0deg) translateY(-5px);box-shadow:0 30px 70px -20px rgba(0,0,0,.8)}
+.chapter:nth-of-type(even) .archive{transform:rotate(1.7deg)}
+.chapter:nth-of-type(even) .archive:hover{transform:rotate(0deg) translateY(-5px)}
+.archive.portrait{max-width:280px}
+.archive img{display:block;width:100%;height:auto;border-radius:3px;background:#20303a;filter:sepia(.16) contrast(1.05) saturate(.9)}
+.archive figcaption{font-family:var(--mono);font-size:10px;letter-spacing:.05em;color:#2A3940;line-height:1.65;margin-top:9px;text-shadow:none}
+.archive figcaption a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+
 /* relic card */
 .relic{
   position:relative;border:1px solid var(--line);border-radius:20px;
@@ -422,6 +438,10 @@ h1,h2,h3{text-shadow:0 6px 44px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.4)}
         <h2>He&#699;e Nalu</h2>
         <p>Polynesian voyagers carried wave riding across the Pacific in their canoes, and in Hawai&#699;i it flowered into he&#699;e nalu: wave sliding, woven into rank, ritual and daily life. Chiefs rode olo boards up to five metres long, carved from sacred wiliwili wood, while commoners rode shorter alaia close to the curl.</p>
         <div class="fact"><b>Field note:</b> Kahuna prayed the surf up, and kapu law reserved the finest breaks for royalty alone. Skill on a wave could raise your standing on land.</div>
+        <figure class="archive">
+          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Surf-Riding,_Waikiki,_Honolulu_(1898).jpg?width=800" alt="Hawaiian surfers riding waves at Waikiki, Honolulu, photographed in 1898" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.closest('figure').remove()">
+          <figcaption>Surf riding at Waik&#299;k&#299;, Honolulu, 1898. The ancient art, photographed as it survived the century. <a href="https://commons.wikimedia.org/wiki/File:Surf-Riding,_Waikiki,_Honolulu_(1898).jpg" target="_blank" rel="noopener">Public domain, via Wikimedia Commons</a></figcaption>
+        </figure>
       </div>
       <button class="relic" data-name="Wiliwili Olo Board" aria-label="Collect relic: Wiliwili Olo Board">
         <span class="r-float">
@@ -447,6 +467,10 @@ h1,h2,h3{text-shadow:0 6px 44px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.4)}
         <h2>First Ink</h2>
         <p>Captain Cook's third voyage reached Hawai&#699;i in 1778, and the following year at Kealakekua Bay, Lieutenant James King devoted two pages of the expedition's journal to the first written account of board surfing, astonished by riders flying shoreward on the crests of breakers, apparently for pure joy. The West had met the wave.</p>
         <div class="fact"><b>Field note:</b> A century later, missionary disapproval and introduced disease had pushed the sport to the edge of extinction. It survived in a handful of devoted hands at Waik&#299;k&#299;.</div>
+        <figure class="archive">
+          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Hawaiian_Sport_of_Surf_Playing,_engraving_by_W._Roberts.jpg?width=800" alt="Nineteenth century engraving by W. Roberts depicting the Hawaiian sport of surf playing" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.closest('figure').remove()">
+          <figcaption>The Hawaiian sport of surf playing, engraving by W. Roberts: how the West first pictured the wave. <a href="https://commons.wikimedia.org/wiki/File:Hawaiian_Sport_of_Surf_Playing,_engraving_by_W._Roberts.jpg" target="_blank" rel="noopener">Public domain, via Wikimedia Commons</a></figcaption>
+        </figure>
       </div>
       <button class="relic" data-name="Ship's Log &amp; Quill" aria-label="Collect relic: Ship's Log and Quill">
         <span class="r-float">
@@ -497,6 +521,10 @@ h1,h2,h3{text-shadow:0 6px 44px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.4)}
         <h2>The Duke</h2>
         <p>Duke Kahanamoku won Olympic swimming gold in 1912, then spent the next decade carrying surfing around the planet. His 1914 demonstration at Freshwater Beach, Sydney, lit the fuse on Australian surf culture, and everywhere he travelled, the sport of kings followed.</p>
         <div class="fact"><b>Field note:</b> Duke shaped his Freshwater board himself from local sugar pine. It still hangs in the surf club there today.</div>
+        <figure class="archive portrait">
+          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Anonymous_photograph_of_Duke_Paoa_Kahanamoku_with_his_surfboard.JPG?width=600" alt="Duke Kahanamoku standing beside his wooden surfboard, circa 1910 to 1915" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.closest('figure').remove()">
+          <figcaption>Duke Paoa Kahanamoku with his board, c. 1910-1915. <a href="https://commons.wikimedia.org/wiki/File:Anonymous_photograph_of_Duke_Paoa_Kahanamoku_with_his_surfboard.JPG" target="_blank" rel="noopener">Public domain, via Wikimedia Commons</a></figcaption>
+        </figure>
       </div>
       <button class="relic" data-name="Duke's Gold Medal" aria-label="Collect relic: Duke's Gold Medal">
         <span class="r-float">
@@ -653,6 +681,10 @@ h1,h2,h3{text-shadow:0 6px 44px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.4)}
         <h2>New Frontier</h2>
         <p>Garrett McNamara's 2011 bomb at Nazar&eacute;, Portugal revealed a canyon that turns Atlantic storms into moving mountains; the certified world record there stands at 26.21 metres, with a 2024 ride provisionally measured at 28.57. Kelly Slater's 2015 artificial wave made perfection on demand, and in 2021 surfing finally became an Olympic sport, a century after Duke first dreamed it.</p>
         <div class="fact"><b>Field note:</b> From a kapu royal ritual to Olympic gold in Tahiti's lineup: the thousand year ride is still building.</div>
+        <figure class="archive">
+          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/10_meters_-_Nazar%C3%A9_-_Portugal_-_Flickr_-_Carlos_Eduardo_Joos.jpg?width=900" alt="A surfer riding a giant wave at Praia do Norte, Nazare, Portugal" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.closest('figure').remove()">
+          <figcaption>Riding a giant at Praia do Norte, Nazar&eacute;, Portugal. Photo: Carlos Eduardo Joos. <a href="https://commons.wikimedia.org/wiki/File:10_meters_-_Nazar%C3%A9_-_Portugal_-_Flickr_-_Carlos_Eduardo_Joos.jpg" target="_blank" rel="noopener">Creative Commons, via Wikimedia Commons</a></figcaption>
+        </figure>
       </div>
       <button class="relic" data-name="The 90ft Face" aria-label="Collect relic: The 90 foot face">
         <span class="r-float">
@@ -1080,7 +1112,7 @@ if (hasGSAP && typeof ScrollTrigger !== 'undefined'){
       var big = sec.querySelector('.ch-bignum');
       if (big) gsap.fromTo(big, {yPercent:18}, {yPercent:-18, ease:'none',
         scrollTrigger:{trigger:sec, start:'top bottom', end:'bottom top', scrub:true}});
-      var bits = sec.querySelectorAll('.ch-eyebrow, .ch-script, h2, .ch-copy p, .fact, .relic, .g-head > *, #gameShell, #finalStoke, #rankEl, #relicShelf, .credits');
+      var bits = sec.querySelectorAll('.ch-eyebrow, .ch-script, h2, .ch-copy p, .fact, .archive, .relic, .g-head > *, #gameShell, #finalStoke, #rankEl, #relicShelf, .credits');
       if (bits.length) gsap.from(bits, {opacity:0, y:44, duration:1, ease:'power3.out', stagger:.08,
         scrollTrigger:{trigger:sec, start:'top 66%'}});
     }
