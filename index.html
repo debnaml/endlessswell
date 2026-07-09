@@ -314,12 +314,32 @@ h1,h2,h3{text-shadow:0 6px 44px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.4)}
 }
 #gameOverlay{
   position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:16px;background:rgba(2,7,12,.72);backdrop-filter:blur(6px);text-align:center;padding:24px;
+  gap:16px;background:rgba(2,7,12,.72);backdrop-filter:blur(6px);text-align:center;padding:24px;overflow:auto;
 }
 #gameOverlay.hide{display:none}
 #gameOverlay h3{font-family:var(--disp);font-weight:800;text-transform:uppercase;font-size:clamp(1.6rem,4vw,2.6rem)}
 #gameOverlay p{color:var(--dim);font-size:.95rem;max-width:46ch;line-height:1.7}
 #gameOverlay .big{font-family:var(--mono);font-size:clamp(2rem,6vw,3.4rem);font-weight:700;color:var(--accent)}
+
+/* leaderboard */
+.lb-wrap{width:100%;max-width:320px;margin:.4rem auto 0}
+.lb-title{font-family:var(--mono);font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--dim);margin-bottom:.7rem}
+.lb-loading,.lb-empty{font-family:var(--mono);font-size:12px;color:var(--dim)}
+.lb-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.lb-row{display:flex;align-items:baseline;gap:12px;font-family:var(--mono);font-size:14px;color:var(--bone);
+  padding:5px 10px;border:1px solid var(--line);border-radius:8px;background:rgba(255,255,255,.03)}
+.lb-row .rank{color:var(--dim);width:1.4ch;text-align:right;font-size:12px}
+.lb-row .ini{flex:1;text-align:left;letter-spacing:.3em;font-weight:700}
+.lb-row .sc{color:var(--accent);font-weight:700}
+.lb-row.you{border-color:var(--accent);box-shadow:0 0 0 1px var(--glow);background:var(--glow)}
+.lb-entry{position:relative;display:flex;flex-direction:column;align-items:center;gap:1rem;margin-top:.5rem}
+.lb-initials{display:flex;gap:12px;cursor:text}
+.lb-slot{width:44px;height:58px;border:1px solid var(--line);border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-weight:700;font-size:30px;color:var(--accent);background:rgba(255,255,255,.04);transition:border-color .2s,box-shadow .2s}
+.lb-slot.active{border-color:var(--accent);box-shadow:0 0 0 2px var(--glow);animation:lbBlink 1.1s steps(1) infinite}
+@keyframes lbBlink{50%{border-color:var(--line);box-shadow:none}}
+.lb-hidden-input{position:absolute;top:0;left:50%;transform:translateX(-50%);width:160px;height:58px;opacity:0;border:0;background:none;
+  font-size:16px;text-align:center;pointer-events:none}
 .btn{
   font-family:var(--mono);font-size:12px;letter-spacing:.28em;text-transform:uppercase;
   background:var(--accent);color:#03141A;border:none;border-radius:999px;padding:14px 30px;font-weight:700;
@@ -717,6 +737,7 @@ h1,h2,h3{text-shadow:0 6px 44px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.4)}
         <div id="gameOverlay">
           <h3>Drop In?</h3>
           <p>Hold SPACE or press and hold the screen to climb the face. Release to drop. Touch the lip or the foam and you are over the falls.</p>
+          <div id="lbStart" class="lb-wrap"><p class="lb-loading">Loading leaderboard&hellip;</p></div>
           <button class="btn" id="gStart">Take the drop</button>
         </div>
       </div>
@@ -1126,10 +1147,122 @@ if (hasGSAP && typeof ScrollTrigger !== 'undefined'){
   });
 }
 
+/* ============ LEADERBOARD ============ */
+var LB = (function(){
+  var API = '/api/scores';
+  var cache = null;
+  function get(){
+    return fetch(API, {headers:{'Accept':'application/json'}})
+      .then(function(r){ return r.ok ? r.json() : {scores:[]}; })
+      .then(function(d){ cache = (d && d.scores) || []; return cache; })
+      .catch(function(){ return cache || []; });
+  }
+  function submit(initials, score){
+    return fetch(API, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({initials:initials, score:score})
+    }).then(function(r){
+      if (!r.ok) throw new Error('save failed');
+      return r.json();
+    }).then(function(d){ cache = (d && d.scores) || cache; return d; });
+  }
+  function qualifies(score, list){
+    if (!(score > 0)) return false;
+    list = list || [];
+    if (list.length < 5) return true;
+    return score > list[list.length-1].score;
+  }
+  return {get:get, submit:submit, qualifies:qualifies};
+})();
+
+function lbEsc(s){
+  return String(s).replace(/[<>&]/g, function(c){
+    return c === '<' ? '&lt;' : c === '>' ? '&gt;' : '&amp;';
+  });
+}
+function lbListHTML(list, mine){
+  if (!list || !list.length) return '<p class="lb-empty">No scores yet &mdash; be the first to carve your name.</p>';
+  var rows = '';
+  for (var i=0;i<list.length;i++){
+    var e = list[i];
+    var you = (mine && e.member === mine) ? ' you' : '';
+    rows += '<li class="lb-row'+you+'"><span class="rank">'+(i+1)+'</span>'+
+            '<span class="ini">'+lbEsc(e.initials)+'</span>'+
+            '<span class="sc">'+e.score+'</span></li>';
+  }
+  return '<ol class="lb-list">'+rows+'</ol>';
+}
+function lbRenderTop(slot){
+  if (!slot) return;
+  LB.get().then(function(list){
+    slot.innerHTML = '<p class="lb-title">Leaderboard &middot; Top 5</p>' + lbListHTML(list);
+  });
+}
+function lbSetupEntry(slot, run, onDone){
+  var input = slot.querySelector('#lbInput');
+  var slots = slot.querySelectorAll('#lbInitials .lb-slot');
+  var saveBtn = slot.querySelector('#lbSave');
+  var saving = false;
+  function sync(){
+    var v = input.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,3);
+    input.value = v;
+    for (var i=0;i<3;i++){
+      slots[i].textContent = v[i] || '_';
+      slots[i].classList.toggle('active', i === Math.min(v.length, 2));
+    }
+  }
+  function save(){
+    if (saving) return;
+    var v = input.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,3);
+    if (!v.length){ input.focus(); return; }
+    saving = true; saveBtn.disabled = true; saveBtn.textContent = 'Saving\u2026';
+    LB.submit(v, run).then(function(d){
+      onDone((d && d.scores) || null, d && d.member);
+    }).catch(function(){
+      saving = false; saveBtn.disabled = false; saveBtn.textContent = 'Save score';
+      var t = slot.querySelector('.lb-title');
+      if (t) t.textContent = 'Could not save \u2014 try again';
+    });
+  }
+  input.addEventListener('input', sync);
+  input.addEventListener('keydown', function(e){
+    if (e.key === 'Enter'){ e.preventDefault(); save(); }
+  });
+  slot.querySelector('#lbInitials').addEventListener('click', function(){ input.focus(); });
+  saveBtn.addEventListener('click', save);
+  setTimeout(function(){ input.focus(); }, 60);
+}
+function lbShowResult(slot, run){
+  if (!slot) return;
+  slot.innerHTML = '<p class="lb-loading">Checking the leaderboard&hellip;</p>';
+  LB.get().then(function(list){
+    if (LB.qualifies(run, list)){
+      slot.innerHTML =
+        '<p class="lb-title">New high score &middot; Enter your initials</p>' +
+        '<div class="lb-entry">' +
+          '<div class="lb-initials" id="lbInitials">' +
+            '<span class="lb-slot active">_</span>' +
+            '<span class="lb-slot">_</span>' +
+            '<span class="lb-slot">_</span>' +
+          '</div>' +
+          '<input id="lbInput" class="lb-hidden-input" maxlength="3" autocomplete="off" ' +
+            'autocapitalize="characters" autocorrect="off" spellcheck="false" ' +
+            'inputmode="text" aria-label="Enter your three initials">' +
+          '<button class="btn" id="lbSave">Save score</button>' +
+        '</div>';
+      lbSetupEntry(slot, run, function(newList, mine){
+        slot.innerHTML = '<p class="lb-title">Leaderboard &middot; Top 5</p>' + lbListHTML(newList || [], mine);
+      });
+    } else {
+      slot.innerHTML = '<p class="lb-title">Leaderboard &middot; Top 5</p>' + lbListHTML(list);
+    }
+  });
+}
+
 /* ============ MINI GAME: SHOOT THE TUBE ============ */
 (function(){
-  var canvas = document.getElementById('gameCanvas');
-  var ctx = canvas.getContext('2d');
+  var canvas = document.getElementById('gameCanvas');  var ctx = canvas.getContext('2d');
   var overlay = document.getElementById('gameOverlay');
   var startBtn = document.getElementById('gStart');
   var gDist = document.getElementById('gDist');
@@ -1181,9 +1314,11 @@ if (hasGSAP && typeof ScrollTrigger !== 'undefined'){
       '<h3>Wipeout!</h3>' +
       '<div class="big">' + run + ' stoke</div>' +
       '<p>' + meters + ' m in the barrel &middot; ' + (shakaPts/50) + ' shakas &middot; best run ' + bestRun + '. Every point is banked to your total.</p>' +
+      '<div id="lbSlot" class="lb-wrap"></div>' +
       '<button class="btn" id="gRetry">Paddle back out</button>';
     document.getElementById('gRetry').addEventListener('click', start);
     toast('Tube run banked &middot; <b>+' + run + ' stoke</b>');
+    lbShowResult(document.getElementById('lbSlot'), run);
   }
   function step(now){
     if (!playing) return;
@@ -1295,6 +1430,9 @@ if (hasGSAP && typeof ScrollTrigger !== 'undefined'){
   startBtn.addEventListener('click', start);
   fit();
 })();
+
+/* show the leaderboard on the drop-in screen */
+lbRenderTop(document.getElementById('lbStart'));
 
 /* ============ FINALE BUTTONS ============ */
 document.getElementById('againBtn').addEventListener('click', function(){
