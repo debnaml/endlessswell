@@ -184,7 +184,7 @@ main{position:relative;z-index:10}
 .frame{max-width:1240px;margin:0 auto;padding:0 clamp(20px,5vw,64px)}
 
 /* hero */
-#hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;position:relative;padding-block:12vh 16vh}
+#hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;position:relative;padding-block:12vh 16vh;padding-inline:0}
 .h-kicker{display:flex;align-items:center;gap:14px;font-family:var(--mono);font-size:clamp(10px,1.2vw,13px);letter-spacing:.4em;text-transform:uppercase;color:var(--dim);margin-bottom:2.4rem}
 .h-kicker::before,.h-kicker::after{content:"";height:1px;width:52px;background:var(--line)}
 #hero h1{
@@ -355,6 +355,9 @@ h1,h2,h3{text-shadow:0 6px 44px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.4)}
 }
 .toast b{color:var(--accent)}
 
+@media (max-width:1300px){
+  #hero{padding-inline:clamp(20px,5vw,64px)}
+}
 @media (max-width:820px){
   .ch-inner{grid-template-columns:1fr;gap:34px}
   .chapter:nth-of-type(even) .ch-inner{direction:ltr}
