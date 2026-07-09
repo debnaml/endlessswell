@@ -329,7 +329,7 @@ h1,h2,h3{text-shadow:0 6px 44px rgba(0,0,0,.55),0 2px 8px rgba(0,0,0,.4)}
 .lb-row{display:flex;align-items:baseline;gap:12px;font-family:var(--mono);font-size:14px;color:var(--bone);
   padding:5px 10px;border:1px solid var(--line);border-radius:8px;background:rgba(255,255,255,.03)}
 .lb-row .rank{color:var(--dim);width:1.4ch;text-align:right;font-size:12px}
-.lb-row .ini{flex:1;text-align:left;letter-spacing:.3em;font-weight:700}
+.lb-row .ini{flex:1;text-align:left;letter-spacing:.3em;font-weight:700;white-space:pre}
 .lb-row .sc{color:var(--accent);font-weight:700}
 .lb-row.you{border-color:var(--accent);box-shadow:0 0 0 1px var(--glow);background:var(--glow)}
 .lb-entry{position:relative;display:flex;flex-direction:column;align-items:center;gap:1rem;margin-top:.5rem}
@@ -1205,7 +1205,7 @@ function lbSetupEntry(slot, run, onDone){
   var saveBtn = slot.querySelector('#lbSave');
   var saving = false;
   function sync(){
-    var v = input.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,3);
+    var v = input.value.toUpperCase().replace(/[^A-Z0-9 .!?&-]/g,'').slice(0,3);
     input.value = v;
     for (var i=0;i<3;i++){
       slots[i].textContent = v[i] || '_';
@@ -1214,8 +1214,8 @@ function lbSetupEntry(slot, run, onDone){
   }
   function save(){
     if (saving) return;
-    var v = input.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,3);
-    if (!v.length){ input.focus(); return; }
+    var v = input.value.toUpperCase().replace(/[^A-Z0-9 .!?&-]/g,'').slice(0,3);
+    if (!v.trim().length){ input.focus(); return; }
     saving = true; saveBtn.disabled = true; saveBtn.textContent = 'Saving\u2026';
     LB.submit(v, run).then(function(d){
       onDone((d && d.scores) || null, d && d.member);

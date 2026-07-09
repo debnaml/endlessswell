@@ -58,14 +58,14 @@ module.exports = async (req, res) => {
 
       let initials = String(body.initials || '')
         .toUpperCase()
-        .replace(/[^A-Z0-9]/g, '')
+        .replace(/[^A-Z0-9 .!?&-]/g, '')
         .slice(0, 3);
       let score = Math.floor(Number(body.score));
 
-      if (!initials.length || !Number.isFinite(score) || score < 0) {
+      if (!initials.trim().length || !Number.isFinite(score) || score < 0) {
         return res.status(400).json({ error: 'Invalid entry' });
       }
-      while (initials.length < 3) initials += '_';
+      while (initials.length < 3) initials += ' ';
       score = Math.min(score, MAX_SCORE);
 
       const member = initials + '|' + Date.now() + '|' + Math.random().toString(36).slice(2, 7);
